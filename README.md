@@ -38,11 +38,7 @@ It is a plug and play frontend application for [AviaCommerce API](https://www.av
 
 ### Important Note
 
-AngularSpree is now a part of [Aviacommerce Project](https://aviacommerce.org). Further development of angularspree will happen in _this repository only_. Also, check the [aviacommerce repo](https://github.com/aviacommerce/avia) where this repository exists as a submodule.
-
-## Features
-
-Please check the online demo [here](https://www.aviacommerce.org/demo/demo.html).
+AngularSpree is now a part of [Aviacommerce Project](https://aviacommerce.org). Further development of angularspree will happen in _this repository only_. Also, check the [aviacommerce repo](https://github.com/aviacommerce/avia) where this repository exists as a submodule
 
 ### Features of this mobile appliction are:-
 
