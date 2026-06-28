@@ -1,0 +1,32 @@
+version: "3.8"
+
+services:
+  angularspree-client:
+    build:
+      context: .
+      dockerfile: ./.docker/development.dockerfile
+
+    container_name: angularspree-client-start
+
+    command: npm run start:mock-ng-spree -- --host 0.0.0.0
+
+    working_dir: /home/app/angularspree-client
+
+    ports:
+      - "4200:4200"
+
+    volumes:
+      - .:/home/app/angularspree-client
+      - /home/app/angularspree-client/node_modules
+
+    user: root
+
+    stdin_open: true
+    tty: true
+
+    networks:
+      - dev-network
+
+networks:
+  dev-network:
+    driver: bridge
