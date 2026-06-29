@@ -1,0 +1,106 @@
+@Library('Shared') _
+pipeline {
+    agent { label 'Node' }
+    
+    environment {
+        SONAR_HOME = tool "Sonar"
+        // Defined here so it's easy to change later without hunting through code
+        DOCKER_USER = "samarthlambture"
+        APP_NAME    = "angularspree-client"
+    }
+    
+    parameters {
+        string(name: 'IMAGE_TAG', defaultValue: '', description: 'Setting docker image tag for the latest push (e.g., v1.0)')
+    }
+    
+    stages {
+        stage("Validate Parameters") {
+            steps {
+                script {
+                    if (params.IMAGE_TAG == '') {
+                        error("IMAGE_TAG must be provided.")
+                    }
+                }
+            }
+        }
+        
+        stage("Workspace Cleanup"){
+            steps{
+                script{
+                    cleanWs()
+                }
+            }
+        }
+        
+        stage('Git: Code Checkout') {
+            steps {
+                script{
+                    // UPDATE THIS URL if your angular code is in a different repository
+                    code_checkout("https://github.com/SamarthLambture/ecommerce-app-2-devops.git","main")
+                }
+            }
+        }
+        
+        stage("Trivy: Filesystem scan"){
+            steps{
+                script{
+                    trivy_scan()
+                }
+            }
+        }
+
+        stage("OWASP: Dependency check"){
+            steps{
+                script{
+                    owasp_dependency()
+                }
+            }
+        }
+        
+        stage("SonarQube: Code Analysis"){
+            steps{
+                script{
+                    // Updated to use the generic app name
+                    sonarqube_analysis("Sonar", "${env.APP_NAME}", "${env.APP_NAME}")
+                }
+            }
+        }
+        
+        stage("SonarQube: Code Quality Gates"){
+            steps{
+                script{
+                    sonarqube_code_quality()
+                }
+            }
+        }
+        
+        stage("Docker: Build Image"){
+            steps{
+                script{
+                    // Assuming your Dockerfile is in the root directory. 
+                    // If it is inside a specific folder, wrap this in a dir('foldername') block.
+                    docker_build("${env.APP_NAME}", "${params.IMAGE_TAG}", "${env.DOCKER_USER}")
+                }
+            }
+        }
+        
+        stage("Docker: Push to DockerHub"){
+            steps{
+                script{
+                    docker_push("${env.APP_NAME}", "${params.IMAGE_TAG}", "${env.DOCKER_USER}") 
+                }
+            }
+        }
+    }
+    
+    post {
+        success {
+            archiveArtifacts artifacts: '*.xml', followSymlinks: false
+            
+            // Triggers your continuous delivery pipeline, passing the single tag forward
+            build job: "angularspree-CD", parameters: [
+                string(name: 'IMAGE_TAG', value: "${params.IMAGE_TAG}")
+            ]
+        }
+    }
+}

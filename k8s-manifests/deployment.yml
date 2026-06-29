@@ -1,0 +1,22 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: angularspree-deployment
+  namespace: angularspree-ns
+  labels:
+    app: angularspree
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: angularspree
+  template:
+    metadata:
+      labels: 
+        app: angularspree
+    spec:
+      containers:
+        - name: angularspree-container
+          image: samarthlambture/angularspree:v1
+          ports:
+            - containerPort: 4200
