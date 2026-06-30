@@ -28,13 +28,11 @@
   left: 5px;
 }
 
-
 :host ::ng-deepngx-input-star-rating {
   display: inline-block;
   --color-star-default: #ddd;
   --color-star-highlight: #fe9700;
 }
-
 
 :host ::ng-deep.themebtnprimary {
   background: darken($theme-action-color, 30);
